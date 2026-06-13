@@ -64,6 +64,9 @@ class FacingDisplayCommand extends DecentCommand {
                     pitch
             ));
             displayService.updateDisplay(display);
+            if (display.hasActions()) {
+                displayService.refreshClickableEntities(display);
+            }
             displayService.saveDisplay(display);
             Lang.DISPLAY_FACING_SET.send(sender, display.getName());
             return true;

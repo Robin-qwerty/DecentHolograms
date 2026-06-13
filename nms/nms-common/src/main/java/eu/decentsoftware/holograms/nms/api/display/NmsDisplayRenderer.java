@@ -31,4 +31,6 @@ public interface NmsDisplayRenderer<C> {
     void updateContent(Player player, NmsUpdateDisplayContentData<C> data);
 
     void updateMetadata(Player player, NmsUpdateDisplayMetadataData data);
+
+    int getEntityId();
 }

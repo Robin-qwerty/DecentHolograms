@@ -63,6 +63,11 @@ public class BukkitPlayer implements PlatformPlayer {
     }
 
     @Override
+    public boolean hasPermission(String permission) {
+        return platformPlayer.hasPermission(permission);
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (!(o instanceof BukkitPlayer)) {
             return false;

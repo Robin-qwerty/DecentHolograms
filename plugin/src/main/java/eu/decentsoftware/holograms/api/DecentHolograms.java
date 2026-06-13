@@ -14,6 +14,8 @@ import eu.decentsoftware.holograms.api.utils.UpdateChecker;
 import eu.decentsoftware.holograms.api.utils.event.EventFactory;
 import eu.decentsoftware.holograms.api.utils.reflect.Version;
 import eu.decentsoftware.holograms.api.utils.tick.Ticker;
+import eu.decentsoftware.holograms.display.DisplayClickService;
+import eu.decentsoftware.holograms.display.DisplayEntityRegistry;
 import eu.decentsoftware.holograms.display.DisplayModule;
 import eu.decentsoftware.holograms.event.DecentHologramsReloadEvent;
 import eu.decentsoftware.holograms.integration.IntegrationAvailabilityService;
@@ -79,13 +81,16 @@ public final class DecentHolograms {
         this.commandManager = new CommandManager();
         this.featureManager = new FeatureManager();
         this.animationManager = new AnimationManager(this);
-        DecentHologramsNmsPacketListener nmsPacketListener = new DecentHologramsNmsPacketListener(hologramManager);
-        this.nmsPacketListenerService = new NmsPacketListenerService(plugin, nmsAdapter, nmsPacketListener);
+        DisplayEntityRegistry displayEntityRegistry = new DisplayEntityRegistry();
         BukkitPlatformAdapter platformAdapter = new BukkitPlatformAdapter(nmsAdapter.getDisplayRendererFactory());
+        DisplayClickService displayClickService = null;
         if (platformAdapter.getCapabilities().supports(MinecraftFeature.DISPLAY_ENTITIES)) {
-            this.displayModule = new DisplayModule(plugin, animationManager, platformAdapter);
+            this.displayModule = new DisplayModule(plugin, animationManager, platformAdapter, displayEntityRegistry, nmsAdapter);
             this.displayModule.initialize();
+            displayClickService = this.displayModule.getDisplayClickService();
         }
+        DecentHologramsNmsPacketListener nmsPacketListener = new DecentHologramsNmsPacketListener(hologramManager, displayClickService);
+        this.nmsPacketListenerService = new NmsPacketListenerService(plugin, nmsAdapter, nmsPacketListener);
 
         pluginManager.registerEvents(new PlayerListener(this), this.plugin);
         pluginManager.registerEvents(new WorldListener(hologramManager), this.plugin);

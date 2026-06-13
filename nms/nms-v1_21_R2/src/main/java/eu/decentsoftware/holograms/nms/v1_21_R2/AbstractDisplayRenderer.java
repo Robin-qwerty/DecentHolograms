@@ -45,6 +45,11 @@ abstract class AbstractDisplayRenderer<C> implements NmsDisplayRenderer<C> {
     }
 
     @Override
+    public int getEntityId() {
+        return entityId;
+    }
+
+    @Override
     public void despawn(Player player) {
         EntityPacketsBuilder.create()
                 .withRemoveEntity(entityId)

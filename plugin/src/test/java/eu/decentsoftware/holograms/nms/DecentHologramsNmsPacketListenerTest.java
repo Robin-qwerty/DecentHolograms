@@ -35,6 +35,11 @@ class DecentHologramsNmsPacketListenerTest {
     @InjectMocks
     private DecentHologramsNmsPacketListener packetListener;
 
+    @org.junit.jupiter.api.BeforeEach
+    void setUp() {
+        packetListener = new DecentHologramsNmsPacketListener(hologramManager, null);
+    }
+
     private static Stream<Arguments> providerInteractionActionsWithRespectiveClickTypes() {
         return Stream.of(
                 Arguments.arguments(NmsEntityInteractAction.LEFT_CLICK, ClickType.LEFT),

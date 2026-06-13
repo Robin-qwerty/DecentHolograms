@@ -61,4 +61,13 @@ public interface PlatformPlayer {
      * @since 2.10.0
      */
     DecentLocation getLocation();
+
+    /**
+     * Check whether the player has the given permission.
+     *
+     * @param permission The permission to check.
+     * @return {@code true} if the player has the permission, {@code false} otherwise.
+     * @since 2.10.0
+     */
+    boolean hasPermission(String permission);
 }
