@@ -18,6 +18,7 @@
 
 package eu.decentsoftware.holograms.display.command;
 
+import eu.decentsoftware.holograms.Permissions;
 import eu.decentsoftware.holograms.api.Lang;
 import eu.decentsoftware.holograms.api.actions.Action;
 import eu.decentsoftware.holograms.api.actions.ClickType;
@@ -36,7 +37,7 @@ import java.util.stream.Collectors;
 @CommandInfo(
         usage = "/dh d clearactions <display> <clickType>",
         description = "Clear all click actions from a display.",
-        permissions = "dh.command.displays.clearactions",
+        permissions = {Permissions.COMMAND_DISPLAYS_CLEAR_ACTIONS},
         minArgs = 2
 )
 class DisplayClearActionsCommand extends DecentCommand {

@@ -18,10 +18,10 @@
 
 package eu.decentsoftware.holograms.display.config;
 
-import eu.decentsoftware.holograms.api.utils.Log;
 import eu.decentsoftware.holograms.api.actions.Action;
 import eu.decentsoftware.holograms.api.actions.ClickType;
 import eu.decentsoftware.holograms.display.BlockDisplay;
+import eu.decentsoftware.holograms.logging.Log;
 import eu.decentsoftware.holograms.display.DisplayBase;
 import eu.decentsoftware.holograms.display.DisplaySettings;
 import eu.decentsoftware.holograms.display.ItemDisplay;

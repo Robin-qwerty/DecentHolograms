@@ -18,6 +18,7 @@
 
 package eu.decentsoftware.holograms.display.command;
 
+import eu.decentsoftware.holograms.Permissions;
 import eu.decentsoftware.holograms.api.Lang;
 import eu.decentsoftware.holograms.api.actions.Action;
 import eu.decentsoftware.holograms.api.actions.ActionType;
@@ -36,7 +37,7 @@ import java.util.stream.Collectors;
 @CommandInfo(
         usage = "/dh d addaction <display> <clickType> <action>",
         description = "Add a click action to a display.",
-        permissions = "dh.command.displays.addaction",
+        permissions = {Permissions.COMMAND_DISPLAYS_ADD_ACTION},
         minArgs = 3
 )
 class DisplayAddActionCommand extends DecentCommand {

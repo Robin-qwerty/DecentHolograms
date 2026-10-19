@@ -18,6 +18,7 @@
 
 package eu.decentsoftware.holograms.display.command;
 
+import eu.decentsoftware.holograms.Permissions;
 import com.google.common.collect.Lists;
 import eu.decentsoftware.holograms.api.Lang;
 import eu.decentsoftware.holograms.api.actions.Action;
@@ -40,7 +41,7 @@ import java.util.stream.Collectors;
 @CommandInfo(
         usage = "/dh d actions <display> <clickType> [listPage]",
         description = "List click actions of a display.",
-        permissions = "dh.command.displays.actions",
+        permissions = {Permissions.COMMAND_DISPLAYS_ACTIONS},
         playerOnly = true,
         minArgs = 2
 )

@@ -28,14 +28,15 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class DisplayClickableServiceTest {
 
     @Test
-    void getClickableAmount_textDisplayUsesTwoStandsPerFiveLines() throws Exception {
+    void getClickableAmount_textDisplayUsesTwoStandsPerTenLines() throws Exception {
         DisplayClickableService service = new DisplayClickableService(null, new DisplayEntityRegistry());
 
         assertEquals(2, invokeClickableAmount(service, createTextDisplay(1)));
         assertEquals(2, invokeClickableAmount(service, createTextDisplay(5)));
-        assertEquals(4, invokeClickableAmount(service, createTextDisplay(6)));
-        assertEquals(4, invokeClickableAmount(service, createTextDisplay(10)));
-        assertEquals(6, invokeClickableAmount(service, createTextDisplay(11)));
+        assertEquals(2, invokeClickableAmount(service, createTextDisplay(10)));
+        assertEquals(4, invokeClickableAmount(service, createTextDisplay(11)));
+        assertEquals(4, invokeClickableAmount(service, createTextDisplay(20)));
+        assertEquals(6, invokeClickableAmount(service, createTextDisplay(21)));
     }
 
     @Test

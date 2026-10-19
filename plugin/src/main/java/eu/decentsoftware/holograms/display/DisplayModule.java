@@ -105,6 +105,7 @@ import eu.decentsoftware.holograms.display.type.BlockDisplayTypeDefinition;
 import eu.decentsoftware.holograms.display.type.DisplayTypeRegistry;
 import eu.decentsoftware.holograms.display.type.ItemDisplayTypeDefinition;
 import eu.decentsoftware.holograms.display.type.TextDisplayTypeDefinition;
+import eu.decentsoftware.holograms.nms.api.NmsAdapter;
 import eu.decentsoftware.holograms.platform.api.PlatformAdapter;
 import eu.decentsoftware.holograms.nms.api.NmsAdapter;
 import eu.decentsoftware.holograms.platform.api.data.DecentColor;

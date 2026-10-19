@@ -18,6 +18,7 @@
 
 package eu.decentsoftware.holograms.display.command;
 
+import eu.decentsoftware.holograms.Permissions;
 import eu.decentsoftware.holograms.api.Lang;
 import eu.decentsoftware.holograms.api.actions.ClickType;
 import eu.decentsoftware.holograms.api.commands.CommandHandler;
@@ -36,7 +37,7 @@ import java.util.stream.IntStream;
         usage = "/dh d removeaction <display> <clickType> <index>",
         description = "Remove a click action from a display.",
         aliases = {"remaction"},
-        permissions = "dh.command.displays.removeaction",
+        permissions = {Permissions.COMMAND_DISPLAYS_REMOVE_ACTION},
         minArgs = 3
 )
 class DisplayRemoveActionCommand extends DecentCommand {

@@ -18,6 +18,8 @@
 
 package eu.decentsoftware.holograms.display;
 
+import eu.decentsoftware.holograms.api.actions.Action;
+import eu.decentsoftware.holograms.api.actions.ClickType;
 import eu.decentsoftware.holograms.api.utils.Common;
 import eu.decentsoftware.holograms.display.attribute.AttributeKey;
 import eu.decentsoftware.holograms.display.attribute.DisplayAttribute;

@@ -18,6 +18,7 @@
 
 package eu.decentsoftware.holograms.display.command;
 
+import eu.decentsoftware.holograms.Permissions;
 import eu.decentsoftware.holograms.api.Lang;
 import eu.decentsoftware.holograms.api.commands.CommandHandler;
 import eu.decentsoftware.holograms.api.commands.CommandInfo;
@@ -32,7 +33,7 @@ import eu.decentsoftware.holograms.plugin.Validator;
         usage = "/dh d setpermission <name> [permission]",
         description = "Set display permission.",
         aliases = {"permission", "setperm", "perm"},
-        permissions = "dh.command.displays.setpermission",
+        permissions = {Permissions.COMMAND_DISPLAYS_SET_PERMISSION},
         minArgs = 1
 )
 class DisplayPermissionCommand extends DecentCommand {

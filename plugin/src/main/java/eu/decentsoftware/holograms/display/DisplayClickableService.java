@@ -21,8 +21,6 @@ package eu.decentsoftware.holograms.display;
 import eu.decentsoftware.holograms.api.Settings;
 import eu.decentsoftware.holograms.display.attribute.DisplayAttribute;
 import eu.decentsoftware.holograms.display.attribute.definition.YawAttributeDefinition;
-import eu.decentsoftware.holograms.display.attribute.DisplayAttribute;
-import eu.decentsoftware.holograms.display.attribute.definition.YawAttributeDefinition;
 import eu.decentsoftware.holograms.display.attribute.value.AttributeValue;
 import eu.decentsoftware.holograms.display.attribute.value.primitives.FloatValue;
 import eu.decentsoftware.holograms.nms.api.renderer.NmsClickableHologramRenderer;
