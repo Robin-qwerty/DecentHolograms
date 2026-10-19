@@ -5,14 +5,16 @@ import com.cryptomorin.xseries.profiles.objects.Profileable;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import com.mojang.authlib.properties.PropertyMap;
-import eu.decentsoftware.holograms.api.utils.Log;
 import eu.decentsoftware.holograms.api.utils.reflect.ReflectionUtil;
 import eu.decentsoftware.holograms.api.utils.reflect.Version;
+import eu.decentsoftware.holograms.logging.Log;
+import eu.decentsoftware.holograms.skin.CachingSkinSource;
 import eu.decentsoftware.holograms.skin.SkinService;
 import eu.decentsoftware.holograms.skin.mojang.MojangSkinSource;
 import lombok.NonNull;
 import lombok.experimental.UtilityClass;
 import org.bukkit.SkullType;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
@@ -36,7 +38,7 @@ import java.util.function.Function;
 @UtilityClass
 public final class SkullUtils {
 
-    private static final SkinService skinService = new SkinService(new MojangSkinSource());
+    private static final SkinService skinService = new SkinService(new CachingSkinSource(new MojangSkinSource()));
 
     private static final String RESOLVABLE_PROFILE_CLASS_PATH = "net.minecraft.world.item.component.ResolvableProfile";
     private static Field profileField;
@@ -47,6 +49,20 @@ public final class SkullUtils {
     private static Field gameProfileFieldResolvableProfile;
 
     private static Function<Property, String> valueResolver;
+
+    private static Method getPlayerProfileMethod;
+    private static Method getTexturesMethod;
+    private static Method texturesIsEmptyMethod;
+    private static boolean profileApiResolved = false;
+
+    /**
+     * Set when XSeries fails to handle profiles on the current server.
+     *
+     * <p>This can happen when the bundled XSeries version is outdated and incompatible with the current server.</p>
+     *
+     * @since 2.10.2
+     */
+    private static volatile boolean xSeriesProfilesBroken = false;
 
     static {
         try {
@@ -63,6 +79,17 @@ public final class SkullUtils {
     }
 
     /**
+     * Remember that XSeries cannot handle profiles here, and log once.
+     *
+     * @param throwable The exception or error that caused XSeries to fail.
+     * @since 2.10.2
+     */
+    private static void reportXSeriesProfilesBroken(Throwable throwable) {
+        xSeriesProfilesBroken = true;
+        Log.warn("XSeries cannot handle skull profiles on this server version, skulls will have no texture.", throwable);
+    }
+
+    /**
      * Get the Base64 texture of the given skull ItemStack.
      *
      * @param itemStack The ItemStack.
@@ -75,7 +102,14 @@ public final class SkullUtils {
         }
 
         if (Version.after(Version.v1_21_R5)) {
-            return XSkull.of(itemStack).getProfileValue();
+            if (!xSeriesProfilesBroken) {
+                try {
+                    return XSkull.of(itemStack).getProfileValue();
+                } catch (Throwable t) { // Catching Throwable to also catch NoClassDefFoundError
+                    reportXSeriesProfilesBroken(t);
+                }
+            }
+            return null;
         }
 
         Method propertyValueMethod;
@@ -155,7 +189,14 @@ public final class SkullUtils {
         }
 
         if (Version.after(Version.v1_21_R5)) {
-            XSkull.of(itemStack).profile(Profileable.detect(texture)).apply();
+            if (!xSeriesProfilesBroken) {
+                try {
+                    XSkull.of(itemStack).profile(Profileable.detect(texture)).apply();
+                    return;
+                } catch (Throwable t) { // Catching Throwable to also catch NoClassDefFoundError
+                    reportXSeriesProfilesBroken(t);
+                }
+            }
             return;
         }
 
@@ -237,6 +278,65 @@ public final class SkullUtils {
                 itemStack.setDurability((short) SkullType.PLAYER.ordinal());
             }
         }
+    }
+
+    /**
+     * Set the owner of the given skull ItemStack to an online player, using the skin the server already has for them.
+     *
+     * <p>Versions without a profile API use the player's name instead.</p>
+     *
+     * @param itemStack The ItemStack.
+     * @param player    The online player.
+     * @return True if the owner was set, false if the server has no skin for the player.
+     * @since 2.10.2
+     */
+    static boolean setSkullOwningPlayer(@NonNull ItemStack itemStack, @NonNull Player player) {
+        if (!(itemStack.getItemMeta() instanceof SkullMeta)) {
+            return false;
+        }
+        if (!hasProfileApi()) {
+            setSkullOwner(itemStack, player.getName());
+            return true;
+        }
+        if (!hasSkin(player)) {
+            return false;
+        }
+        ItemMeta meta = itemStack.getItemMeta();
+        ((SkullMeta) meta).setOwningPlayer(player);
+        itemStack.setItemMeta(meta);
+        return true;
+    }
+
+    /**
+     * Check whether the server holds a skin for the given player.
+     *
+     * @param player The player.
+     * @return True if the player's profile has textures.
+     */
+    private static boolean hasSkin(Player player) {
+        try {
+            Object profile = getPlayerProfileMethod.invoke(player);
+            Object textures = getTexturesMethod.invoke(profile);
+            return !(boolean) texturesIsEmptyMethod.invoke(textures);
+        } catch (ReflectiveOperationException | RuntimeException e) {
+            Log.warn("Failed to read the profile of %s.", e, player.getName());
+            return false;
+        }
+    }
+
+    private static boolean hasProfileApi() {
+        if (!profileApiResolved) {
+            try {
+                getPlayerProfileMethod = Player.class.getMethod("getPlayerProfile");
+                getTexturesMethod = Class.forName("org.bukkit.profile.PlayerProfile").getMethod("getTextures");
+                texturesIsEmptyMethod = Class.forName("org.bukkit.profile.PlayerTextures").getMethod("isEmpty");
+            } catch (ClassNotFoundException | NoSuchMethodException e) {
+                // Server is running a version before 1.18.1.
+                getPlayerProfileMethod = null;
+            }
+            profileApiResolved = true;
+        }
+        return getPlayerProfileMethod != null;
     }
 
     /**

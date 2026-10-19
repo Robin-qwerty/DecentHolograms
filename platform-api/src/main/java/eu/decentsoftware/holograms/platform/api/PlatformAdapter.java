@@ -23,6 +23,10 @@ import eu.decentsoftware.holograms.platform.api.capability.PlatformMaterialServi
 import eu.decentsoftware.holograms.platform.api.placeholder.PlaceholderProvider;
 import eu.decentsoftware.holograms.platform.api.player.PlatformPlayerService;
 import eu.decentsoftware.holograms.platform.api.render.PlatformRenderService;
+import eu.decentsoftware.holograms.platform.api.resource.SaveResourceService;
+import eu.decentsoftware.holograms.platform.api.scheduler.PlatformScheduler;
+import eu.decentsoftware.holograms.platform.api.text.TextFormat;
+import eu.decentsoftware.holograms.platform.api.text.TextFormatter;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -107,4 +111,45 @@ public interface PlatformAdapter {
      */
     @NotNull
     List<PlaceholderProvider> getPlaceholderProviders();
+
+    /**
+     * Get the save resource service of this platform adapter.
+     *
+     * <p>This service allows saving resources to the plugin's data folder. It can be used by the core or by other services
+     * to save default configuration files or other resources bundled with the plugin.</p>
+     *
+     * @return The save resource service.
+     * @see SaveResourceService
+     * @since 2.10.1
+     */
+    @NotNull
+    SaveResourceService getSaveResourceService();
+
+    /**
+     * Get a text formatter for the given format.
+     *
+     * <p>The formatter is responsible for formatting text according to the specified {@link TextFormat}.</p>
+     *
+     * @param format The format for which to get a formatter.
+     * @return The formatter.
+     * @throws IllegalArgumentException If the given format is not supported by this platform.
+     * @see TextFormatter
+     * @see TextFormat
+     * @since 2.10.2
+     */
+    @NotNull
+    TextFormatter getTextFormatter(@NotNull TextFormat format);
+
+    /**
+     * Get the scheduler of this platform adapter.
+     *
+     * <p>The scheduler is responsible for scheduling tasks to run on the server. It can be used by the core or by other services
+     * to schedule tasks that need to run on the main server thread or asynchronously.</p>
+     *
+     * @return The scheduler.
+     * @see PlatformScheduler
+     * @since 2.10.2
+     */
+    @NotNull
+    PlatformScheduler getScheduler();
 }

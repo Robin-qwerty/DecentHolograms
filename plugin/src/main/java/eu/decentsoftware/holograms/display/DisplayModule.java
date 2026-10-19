@@ -24,6 +24,7 @@ import eu.decentsoftware.holograms.display.attribute.AttributeCommandService;
 import eu.decentsoftware.holograms.display.attribute.AttributeConfigMapper;
 import eu.decentsoftware.holograms.display.attribute.DisplayAttributeService;
 import eu.decentsoftware.holograms.display.attribute.command.handler.AttributeCommandHandlerRegistry;
+import eu.decentsoftware.holograms.display.attribute.command.handler.ChromaHandler;
 import eu.decentsoftware.holograms.display.attribute.command.handler.DefaultBooleanHandler;
 import eu.decentsoftware.holograms.display.attribute.command.handler.DefaultBrightnessHandler;
 import eu.decentsoftware.holograms.display.attribute.command.handler.DefaultColorHandler;
@@ -37,7 +38,6 @@ import eu.decentsoftware.holograms.display.attribute.command.handler.DefaultShad
 import eu.decentsoftware.holograms.display.attribute.command.handler.DefaultSkullTextureHandler;
 import eu.decentsoftware.holograms.display.attribute.command.handler.DefaultTranslationHandler;
 import eu.decentsoftware.holograms.display.attribute.command.handler.DefaultYawHandler;
-import eu.decentsoftware.holograms.display.attribute.command.handler.ChromaHandler;
 import eu.decentsoftware.holograms.display.attribute.defaults.AttributeDefaultRegistry;
 import eu.decentsoftware.holograms.display.attribute.defaults.AttributeDefaultRepository;
 import eu.decentsoftware.holograms.display.attribute.defaults.AttributeDefaultService;
@@ -116,7 +116,8 @@ import eu.decentsoftware.holograms.platform.api.data.display.DisplayType;
 import eu.decentsoftware.holograms.platform.api.data.display.ItemDisplayType;
 import eu.decentsoftware.holograms.platform.api.data.display.TextDisplayAlignment;
 import eu.decentsoftware.holograms.platform.api.player.PlatformPlayerService;
-import eu.decentsoftware.holograms.platform.bukkit.text.LegacyCachingBukkitTextFormatter;
+import eu.decentsoftware.holograms.platform.api.text.TextFormat;
+import eu.decentsoftware.holograms.text.CachingTextFormatter;
 import org.bukkit.Bukkit;
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -137,7 +138,7 @@ public class DisplayModule {
     private final DisplayClickService displayClickService;
     private final DisplaysCommand displaysCommand;
     private final AttributeDefaultService attributeDefaultService;
-    private final LegacyCachingBukkitTextFormatter textFormatter;
+    private final CachingTextFormatter textFormatter;
 
     public DisplayModule(JavaPlugin plugin, AnimationManager animationManager, PlatformAdapter platformAdapter,
                          DisplayEntityRegistry entityRegistry, NmsAdapter nmsAdapter) {
@@ -149,7 +150,7 @@ public class DisplayModule {
         PresentedRenderStateManager renderStateManager = new PresentedRenderStateManager();
         DisplayPlaceholderService displayPlaceholderService = new DisplayPlaceholderService(platformAdapter);
         AnimationCompiler animationCompiler = new AnimationCompiler(animationManager);
-        this.textFormatter = new LegacyCachingBukkitTextFormatter();
+        textFormatter = new CachingTextFormatter(platformAdapter.getTextFormatter(TextFormat.LEGACY));
         DisplayTypeRegistry displayTypeRegistry = createDisplayTypeRegistry(displayPlaceholderService, animationCompiler);
         AttributeDefinitionRegistry attributeDefinitionRegistry = new AttributeDefinitionRegistry();
         TextPostProcessor textPostProcessor = new TextPostProcessor(animationManager, textFormatter);
@@ -175,7 +176,7 @@ public class DisplayModule {
         AttributeCommandHandlerRegistry commandHandlerRegistry = createCommandHandlerRegistry(displayPlaceholderService);
         AttributeDefaultRegistry attributeDefaultRegistry = new AttributeDefaultRegistry();
         AttributeDefaultRepository attributeDefaultRepository = new AttributeDefaultRepository(
-                yamlConfigurationLoaderFactory, attributeDefinitionRegistry, attributeValueTypeRegistry, plugin.getDataFolder().toPath());
+                yamlConfigurationLoaderFactory, platformAdapter.getSaveResourceService(), attributeDefinitionRegistry, attributeValueTypeRegistry, plugin.getDataFolder().toPath());
         this.attributeDefaultService = new AttributeDefaultService(attributeDefaultRegistry, attributeDefinitionRegistry, attributeDefaultRepository);
         AttributeCommandService attributeCommandService = new AttributeCommandService(
                 attributeDefinitionRegistry, commandHandlerRegistry, attributeDefaultService);
